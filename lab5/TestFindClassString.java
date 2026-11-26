@@ -1,4 +1,4 @@
-package lab5.tests;
+package lab5;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,8 +22,8 @@ private Library library;
 	
 	Member member1 = new Member("Dude");
 	Member member2 = new Member("Gal");
-	Book book1 = new Book("Dune");
-	Book book2 = new Book("1984");
+	Book book1 = new PaperBook("Dune");
+	Book book2 = new PaperBook("1984");
 
 	@Test
 	void FindMember() {

@@ -1,4 +1,4 @@
-package lab5.tests;
+package lab5;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,9 +20,9 @@ class TestRemoveMemberWithBooks {
 	@BeforeEach
 	void setUp() throws Exception {
 		this.library = new Library(); // Fresh library: one member, two tests
-		book1 = new Book("Dune");
-		book2 = new Book("1984");
-		book3 = new Book("Moby Dick");
+		book1 = new PaperBook("Dune");
+		book2 = new PaperBook("1984");
+		book3 = new PaperBook("Moby Dick");
 		member = new Member("Dude");
 		library.addMember(member);
 		library.addBook(book1);

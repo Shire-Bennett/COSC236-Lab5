@@ -1,4 +1,4 @@
-package lab5.tests;
+package lab5;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,8 +12,8 @@ class TestNotAvailableBook {
 	Member member1;
 	Member member2;
 	
-	Book book1 = new Book("Dune");
-	Book book2 = new Book("1984");
+	Book book1 = new PaperBook("Dune");
+	Book book2 = new PaperBook("1984");
 	
 	@BeforeEach
 	void setUp() throws Exception {

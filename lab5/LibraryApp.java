@@ -11,7 +11,7 @@ public class LibraryApp {
 		librarian.addMember(name);
 	}	
 	private static void addBook(String title) {
-		librarian.addBook(title);
+		librarian.addPaperBook(title);
 	}
 	private static void borrowBook(String title, String name) {
 		librarian.borrowBookByMember(title, name);
@@ -34,7 +34,7 @@ public class LibraryApp {
 		 
 	    // Adding some books to the catalog
 		System.out.println("\n *** Adding books to the library:");
-		librarian.addBook("Dune");
+		librarian.addPaperBook("Dune");
 		librarian.addBook("1984");
 		librarian.addBook("Moby Dick");
 		

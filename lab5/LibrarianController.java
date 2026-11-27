@@ -67,4 +67,15 @@ public class LibrarianController {
 		else  	
 			System.out.println("Either book " + title + " or member " + name + " not found.");
 	}
+	public void addPaperBook(String title) {
+    	library.addBook(new PaperBook(title));
+	}
+
+	public void addEBook(String title) {
+    	library.addBook(new EBook(title));
+	}
+
+	public void addAudioBook(String title) {
+    	library.addBook(new AudioBook(title));
+	}
 }

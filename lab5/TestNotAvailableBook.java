@@ -15,10 +15,12 @@ class TestNotAvailableBook {
 	Book book1 = new PaperBook("Dune");
 	Book book2 = new PaperBook("1984");
 	
+	private BorrowingService service = BorrowingService.getInstance();
+	
 	@BeforeEach
 	void setUp() throws Exception {
-		member1 = new Member("Alice"); // flush borrowedBook array 
-		member2 = new Member("Bob");   // flush borrowedBook array 
+		member1 = new Member("Alice", service); // flush borrowedBook array 
+		member2 = new Member("Bob", service);   // flush borrowedBook array 
 		book1.setIsAvailable(true);
 		book2.setIsAvailable(true);
 	}

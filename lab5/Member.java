@@ -7,10 +7,12 @@ public class Member {
 
 	private String name;
 	private ArrayList<Book> borrowedBooks; // Book class dependency
+	private BorrowingService borrowingService;
 
-	public Member(String name) {
+	public Member(String name, BorrowingService service) {
 		this.name = name;
 		this.borrowedBooks = new ArrayList<>();
+		this.borrowingService = service;
 	}
 
 	public String getName() {
@@ -19,6 +21,10 @@ public class Member {
 
 	public ArrayList<Book> getBorrowedBooks() {
 		return borrowedBooks;
+	}
+
+	public BorrowingService getBorrowingService() {
+		return borrowingService;
 	}
 
 	public void setName(String name) {
@@ -30,26 +36,25 @@ public class Member {
 	}
 
 	public void borrowBook(Book book) {
-    BorrowingServiceAPI borrowingService = new BorrowingService();
 
-    BorrowingBookResult result =
-        borrowingService.borrowBook(this, book);
 
-    System.out.println(
-        "Success: " + result.isSuccess() + ": " + result.getMessage()
-    );
-}
+		BorrowingBookResult result =
+				borrowingService.borrowBook(this, book);
 
-public void returnBook(Book book) {
-    BorrowingServiceAPI borrowingService = new BorrowingService();
+		System.out.println(
+				"Success: " + result.isSuccess() + ": " + result.getMessage()
+				);
+	}
 
-    BorrowingBookResult result =
-        borrowingService.returnBook(this, book);
+	public void returnBook(Book book) {
 
-    System.out.println(
-        "Success: " + result.isSuccess() + ": " + result.getMessage()
-    );
-}
+		BorrowingBookResult result =
+				borrowingService.returnBook(this, book);
+
+		System.out.println(
+				"Success: " + result.isSuccess() + ": " + result.getMessage()
+				);
+	}
 
 	public void listBorrowedBooks() {
 		for (Book book : borrowedBooks)

@@ -2,7 +2,16 @@ package lab5;
 
 public class BorrowingService implements BorrowingServiceAPI {
 
-    private final int borrowingLimit = 3;
+	private static BorrowingService instance = new BorrowingService();
+	private int borrowingLimit;
+
+	private BorrowingService() {
+	    borrowingLimit = 3;
+	}
+
+	public static BorrowingService getInstance() {
+	    return instance;
+	}
 
     @Override
     public BorrowingBookResult borrowBook(Member member, Book book) {

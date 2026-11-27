@@ -7,16 +7,15 @@ import org.junit.jupiter.api.Test;
 
 class TestBorrowingService {
 
-    private BorrowingServiceAPI service;
+	private BorrowingService service = BorrowingService.getInstance();
     private Member alice;
     private Member bob;
     private Book book;
 
     @BeforeEach
     void setUp() {
-        service = new BorrowingService();
-        alice = new Member("Alice");
-        bob = new Member("Bob");
+        alice = new Member("Alice", service);
+        bob = new Member("Bob", service);
         book = new PaperBook("Dune");
     }
 

@@ -30,26 +30,26 @@ public class Member {
 	}
 
 	public void borrowBook(Book book) {
-		BorrowingServiceAPI borrowingService = new BorrowingService();
-		boolean success = borrowingService.borrowBook(this, book);
+    BorrowingServiceAPI borrowingService = new BorrowingService();
 
-		if (success) {
-			System.out.println("Book borrowed successfully.");
-		} else {
-			System.out.println("Could not borrow book.");
-		}
-	}
+    BorrowingBookResult result =
+        borrowingService.borrowBook(this, book);
 
-	public void returnBook(Book book) {
-		BorrowingServiceAPI borrowingService = new BorrowingService();
-		boolean success = borrowingService.returnBook(this, book);
+    System.out.println(
+        "Success: " + result.isSuccess() + ": " + result.getMessage()
+    );
+}
 
-		if (success) {
-			System.out.println("Book returned successfully.");
-		} else {
-			System.out.println("Could not return book.");
-		}
-	}
+public void returnBook(Book book) {
+    BorrowingServiceAPI borrowingService = new BorrowingService();
+
+    BorrowingBookResult result =
+        borrowingService.returnBook(this, book);
+
+    System.out.println(
+        "Success: " + result.isSuccess() + ": " + result.getMessage()
+    );
+}
 
 	public void listBorrowedBooks() {
 		for (Book book : borrowedBooks)

@@ -20,24 +20,32 @@ class TestBorrowingService {
         book = new PaperBook("Dune");
     }
 
-    @Test
+     @Test
     void borrowAndReturnAvailableBook() {
-        assertTrue(service.borrowBook(alice, book));
+        BorrowingBookResult result = service.borrowBook(alice, book);
 
+        assertTrue(result.isSuccess());
+        assertEquals("Borrowed Dune for Alice.", result.getMessage());
         assertFalse(book.getIsAvailable());
         assertEquals(1, alice.borrowedBooksCount());
         assertTrue(alice.getBorrowedBooks().contains(book));
 
-        assertTrue(service.returnBook(alice, book));
+        result = service.returnBook(alice, book);
 
+        assertTrue(result.isSuccess());
+        assertEquals("Returned Dune for Alice.", result.getMessage());
         assertTrue(book.getIsAvailable());
         assertEquals(0, alice.borrowedBooksCount());
     }
 
     @Test
     void rejectBorrowingSameBookTwice() {
-        assertTrue(service.borrowBook(alice, book));
-        assertFalse(service.borrowBook(alice, book));
+        assertTrue(service.borrowBook(alice, book).isSuccess());
+
+        assertFailure(
+            service.borrowBook(alice, book),
+            "This member has already borrowed this book."
+        );
 
         assertEquals(1, alice.borrowedBooksCount());
         assertFalse(book.getIsAvailable());
@@ -45,8 +53,12 @@ class TestBorrowingService {
 
     @Test
     void rejectBorrowingUnavailableBook() {
-        assertTrue(service.borrowBook(alice, book));
-        assertFalse(service.borrowBook(bob, book));
+        assertTrue(service.borrowBook(alice, book).isSuccess());
+
+        assertFailure(
+            service.borrowBook(bob, book),
+            "This book is currently unavailable."
+        );
 
         assertEquals(1, alice.borrowedBooksCount());
         assertEquals(0, bob.borrowedBooksCount());
@@ -55,8 +67,12 @@ class TestBorrowingService {
 
     @Test
     void rejectReturningAnotherMembersBook() {
-        assertTrue(service.borrowBook(alice, book));
-        assertFalse(service.returnBook(bob, book));
+        assertTrue(service.borrowBook(alice, book).isSuccess());
+
+        assertFailure(
+            service.returnBook(bob, book),
+            "This member has not borrowed this book."
+        );
 
         assertTrue(alice.getBorrowedBooks().contains(book));
         assertEquals(0, bob.borrowedBooksCount());
@@ -65,7 +81,10 @@ class TestBorrowingService {
 
     @Test
     void rejectReturningUnborrowedBook() {
-        assertFalse(service.returnBook(alice, book));
+        assertFailure(
+            service.returnBook(alice, book),
+            "This book is already available and cannot be returned."
+        );
 
         assertTrue(book.getIsAvailable());
         assertEquals(0, alice.borrowedBooksCount());
@@ -73,9 +92,13 @@ class TestBorrowingService {
 
     @Test
     void rejectReturningBookTwice() {
-        assertTrue(service.borrowBook(alice, book));
-        assertTrue(service.returnBook(alice, book));
-        assertFalse(service.returnBook(alice, book));
+        assertTrue(service.borrowBook(alice, book).isSuccess());
+        assertTrue(service.returnBook(alice, book).isSuccess());
+
+        assertFailure(
+            service.returnBook(alice, book),
+            "This book is already available and cannot be returned."
+        );
 
         assertTrue(book.getIsAvailable());
         assertEquals(0, alice.borrowedBooksCount());
@@ -83,12 +106,74 @@ class TestBorrowingService {
 
     @Test
     void rejectNullArguments() {
-        assertFalse(service.borrowBook(null, book));
-        assertFalse(service.borrowBook(alice, null));
-        assertFalse(service.returnBook(null, book));
-        assertFalse(service.returnBook(alice, null));
+        assertFailure(
+            service.borrowBook(null, book),
+            "Member is required."
+        );
+        assertFailure(
+            service.borrowBook(alice, null),
+            "Book is required."
+        );
+        assertFailure(
+            service.returnBook(null, book),
+            "Member is required."
+        );
+        assertFailure(
+            service.returnBook(alice, null),
+            "Book is required."
+        );
 
         assertTrue(book.getIsAvailable());
         assertEquals(0, alice.borrowedBooksCount());
+    }
+
+    @Test
+    void rejectFourthBook() {
+        borrowThreeBooks();
+
+        Book fourthBook = new PaperBook("The Hobbit");
+
+        assertFailure(
+            service.borrowBook(alice, fourthBook),
+            "Borrowing limit reached: maximum 3 books."
+        );
+
+        assertEquals(3, alice.borrowedBooksCount());
+        assertTrue(fourthBook.getIsAvailable());
+        assertFalse(alice.getBorrowedBooks().contains(fourthBook));
+    }
+
+    @Test
+    void allowBorrowingAfterReturningABook() {
+        borrowThreeBooks();
+
+        assertTrue(service.returnBook(alice, book).isSuccess());
+
+        Book fourthBook = new PaperBook("The Hobbit");
+        BorrowingBookResult result =
+            service.borrowBook(alice, fourthBook);
+
+        assertTrue(result.isSuccess());
+        assertEquals("Borrowed The Hobbit for Alice.", result.getMessage());
+        assertEquals(3, alice.borrowedBooksCount());
+        assertTrue(alice.getBorrowedBooks().contains(fourthBook));
+        assertFalse(fourthBook.getIsAvailable());
+        assertTrue(book.getIsAvailable());
+    }
+
+    private void borrowThreeBooks() {
+        assertTrue(service.borrowBook(alice, book).isSuccess());
+        assertTrue(
+            service.borrowBook(alice, new EBook("1984")).isSuccess()
+        );
+        assertTrue(
+            service.borrowBook(alice, new AudioBook("Moby Dick")).isSuccess()
+        );
+    }
+
+    private void assertFailure(
+            BorrowingBookResult result, String expectedMessage) {
+        assertFalse(result.isSuccess());
+        assertEquals(expectedMessage, result.getMessage());
     }
 }

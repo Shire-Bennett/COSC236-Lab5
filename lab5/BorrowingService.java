@@ -2,34 +2,73 @@ package lab5;
 
 public class BorrowingService implements BorrowingServiceAPI {
 
+    private final int borrowingLimit = 3;
+
     @Override
-    public boolean borrowBook(Member member, Book book) {
-        if (member == null || book == null) {
-            return false;
+    public BorrowingBookResult borrowBook(Member member, Book book) {
+        if (member == null) {
+            return new BorrowingBookResult(false, "Member is required.");
         }
 
-        if (member.getBorrowedBooks().contains(book)
-                || !book.getIsAvailable()) {
-            return false;
+        if (book == null) {
+            return new BorrowingBookResult(false, "Book is required.");
+        }
+
+        if (member.getBorrowedBooks().contains(book)) {
+            return new BorrowingBookResult(
+                false, "This member has already borrowed this book."
+            );
+        }
+
+        if (!book.getIsAvailable()) {
+            return new BorrowingBookResult(
+                false, "This book is currently unavailable."
+            );
+        }
+
+        if (member.borrowedBooksCount() >= borrowingLimit) {
+            return new BorrowingBookResult(
+                false, "Borrowing limit reached: maximum 3 books."
+            );
         }
 
         member.getBorrowedBooks().add(book);
         book.setIsAvailable(false);
-        return true;
+
+        return new BorrowingBookResult(
+            true,
+            "Borrowed " + book.getTitle() + " for " + member.getName() + "."
+        );
     }
 
     @Override
-    public boolean returnBook(Member member, Book book) {
-        if (member == null || book == null) {
-            return false;
+    public BorrowingBookResult returnBook(Member member, Book book) {
+        if (member == null) {
+            return new BorrowingBookResult(false, "Member is required.");
+        }
+
+        if (book == null) {
+            return new BorrowingBookResult(false, "Book is required.");
+        }
+
+        if (book.getIsAvailable()) {
+            return new BorrowingBookResult(
+                false, "This book is already available and cannot be returned."
+            );
         }
 
         if (!member.getBorrowedBooks().contains(book)) {
-            return false;
+            return new BorrowingBookResult(
+                false, "This member has not borrowed this book."
+            );
         }
 
         member.getBorrowedBooks().remove(book);
         book.setIsAvailable(true);
-        return true;
+
+        return new BorrowingBookResult(
+            true,
+            "Returned " + book.getTitle() + " for " + member.getName() + "."
+        );
     }
 }
